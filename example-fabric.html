@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Fabric Demo</title>
+  <script src="https://cdn.jsdelivr.net/npm/fabric@latest/dist/index.min.js"></script>
+</head>
+<body>
+  <section id="fabricDemo" style="margin: 2rem;">
+    <canvas id="fabricCanvas" style="border: black solid 3px; margin-bottom: 1rem;"></canvas>
+  </section>
+  <section style="margin: 2rem;">
+    <button id="fabricExport">Export</button>
+  </section>
+  <script type="module">
+    // import { Canvas, PencilBrush } from "fabric";
+    const { Canvas, PencilBrush } = fabric;
+
+    // Initialize fabric
+    const canvas = new Canvas(
+      document.getElementById("fabricCanvas"),
+      {
+        // Enable drawing mode
+        isDrawingMode: true,
+        height: 400,
+        width: 600
+      }
+    );
+
+    canvas.freeDrawingBrush = new PencilBrush(canvas);
+
+    document.getElementById("fabricExport").addEventListener("click", event => {
+      const json = canvas.toJSON();
+      console.log('matsinet-index.js:196-json:', json);
+    })
+  </script>
+</body>
+</html>

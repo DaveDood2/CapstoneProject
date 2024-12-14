@@ -1,84 +1,29 @@
-<canvas id="myCanvas" width="300" height="150" style="border:1px solid grey"></canvas>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <link rel="stylesheet" href="style.css"/>
+</head>
+<body>
+  <header>
+    <h1>Monster Maker</h1>
+  </header>
+  <nav>
+    <a href="about.html">About</a><a href="contact.html">Contact</a>
+  </nav>
+  <main>
+    <canvas id="myCanvas" width="300" height="150"></canvas>
 
-<script>
-const c = document.getElementById("myCanvas");
-const ctx = c.getContext("2d");
-let isDrawing = false;
+    <script src="draw.js"></script>
 
-function getCursorPosition(event){
-  const rect = c.getBoundingClientRect();
-  const x = event.clientX - rect.left;
-  const y = event.clientY - rect.top;
-  //console.log("drawing at", x, y);
-  return [x, y];
-}
-
-c.addEventListener("mousedown", (event) => {
-  beginDrawing(getCursorPosition(event));
-});
-
-c.addEventListener("mousemove", (event) => {
-  if (isDrawing) draw(getCursorPosition(event));
-});
-
-c.addEventListener("mouseup", () => {
-  endDrawing();
-});
-
-function beginDrawing(coords){
-  //console.log(coords);
-  ctx.beginPath();
-  ctx.moveTo(coords[0], coords[1]);
-  ctx.lineWidth = 10;
-  isDrawing = true;
-}
-
-function draw(coords){
-  ctx.fillStyle = "black";
-  //ctx.fillRect(coords[0], coords[1], 3, 3);
-  ctx.lineTo(coords[0], coords[1]);
-  ctx.stroke();
-}
-
-function endDrawing(){
-  //ctx.closePath();
-  ctx.stroke();
-  isDrawing = false;
-}
-
-function save(){
-  console.log("Saving!");
-  const rect = c.getBoundingClientRect();
-  let img = ctx.getImageData(0, 0, rect.width, rect.height);
-  //let img = ctx.getImageData(0, 0, 50, 50);
-  console.log(img.data);
-  printPixelData(img.data);
-}
-
-function printPixelData(imageData){
-  const rect = c.getBoundingClientRect();
-  let outputString = "";
-  for(i = 0; i < imageData.length; i += 4){
-    let x = (i / 4) % rect.width;
-    let y = Math.floor((i / 4) / rect.width);
-    if (x === 0){
-      outputString += "\n";
-    }
-    else if(imageData[i+3]){
-      outputString += "■";
-    }
-    else{
-      outputString += "□";
-    }
-  }
-  console.log(outputString);
-}
-
-</script>
-
-<p>
-<button onclick="save()">Output</button>
-</p>
-
+    <p>
+    <button onclick="save()">Output</button>
+    </p>
+  </main>
+  <footer>
+    By Lucy
+  </footer>
 </body>
 </html>
