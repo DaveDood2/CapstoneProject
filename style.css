@@ -1,19 +1,68 @@
+:root {
+  --primary-color: rgb(86, 151, 70);
+  --primary-darker: rgb(50, 56, 44);
+  --secondary-color: rgb(253, 80, 80);
+  --secondary-darker: rgb(107, 48, 48);
+  --text-primary-color: rgb(227, 255, 210);
+  --text-secondary-color: rgb(245, 183, 183);
+
+  --grape-solid: purple;
+  --grape-back: rgb(219, 175, 219);
+  --apple-solid: rgb(248, 99, 72);
+  --apple-back: rgb(0, 0, 0);
+  --orange-solid: orange;
+  --orange-back: rgb(252, 232, 197);
+  --banana-solid: rgb(210, 255, 87);
+  --banana-back: rgb(255, 246, 193);
+  --blueberry-solid: rgb(79, 96, 250);
+  --blueberry-back: rgb(179, 225, 255);
+}
+
+.hero {
+  background-image: url(peasintSpinProfile.gif);
+  background-size: cover;
+  background-repeat:repeat;
+  height: 70vh;
+}
+
+.hero > a {
+  text-decoration: none;
+  background-color: var(--primary-color);
+  font-size: 1.5em;
+  padding: 1.5rem;
+  border-radius: 10px;
+}
+
 header, h2 {
   text-align: center;
   color: pink;
-  background-color: rgb(253, 80, 80);
+  background-color: var(--secondary-color);
   border-radius: 5px;
-  border: 5px solid rgb(107, 48, 48);
+  border: 5px solid var(--secondary-darker);
   margin: 10px;
   text-shadow: 3px 3px black;
   box-shadow: 5px 5px black;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 body {
   font-family: "permanentMarker";
-  background-color: rgb(50, 56, 44);
-  color: rgb(245, 183, 183);
+  background-color: var(--primary-darker);
+  color: var(--text-secondary-color);
   font-weight: bolder;
+}
+
+#monsterMakerBack {
+  position: fixed;
+  top: 0px;
+  left: 0px;
+  width: 100%;
+  height: 100%;
+  opacity: 50%;
+  z-index: -100;
+  mix-blend-mode:color-dodge;
 }
 
 canvas {
@@ -21,21 +70,29 @@ canvas {
   background-color: white;
 }
 
-nav {
-  text-align: center;
+nav > div, nav {
+  /* text-align: center;*/
   margin: 20px;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  /* align-items: center; */
 }
 
 p, nav a {
   font-size: 25px;
   text-shadow: 3px 3px black;
-  color: rgb(227, 255, 210);
-  background-color: rgb(63, 116, 50);
+  color: var(--text-primary-color);
+  background-color: var(--primary-color);
   border-radius: 5px;
   border: 5px solid rgb(6, 48, 0);
   box-shadow: 5px 5px black;
   padding: 10px;
+  margin-left: 10%;
+  margin-right: 10%;
+  width: fit-content;
 }
+
 
 main {
   text-align: center;
@@ -46,7 +103,15 @@ a {
 }
 
 .shake {
-  animation: shake 0.8s infinite;
+  animation: shake 0.8s normal;
+}
+
+button:hover, a:hover {
+  border: 5px dotted var(--text-primary-color);
+}
+
+button {
+  border: 5px solid var(--primary-darker);
 }
 
 @keyframes shake{
@@ -65,19 +130,46 @@ a {
   }
 }
 
+.appear {
+  animation: appear 5s ;
+}
+
+@keyframes appear{
+  0%{
+    opacity: 0%;
+  }
+  100%{
+    opacity: 50%;
+  }
+}
+
 @font-face {
   font-family: "permanentMarker";
   src: url("Permanentmarker-Regular.ttf");
+}
+
+
+
+.roboto-mono {
+  font-family: "Roboto Mono", serif;
+  font-optical-sizing: auto;
+  font-weight: 400;
+  font-style: normal;
+}
+
+.rubik-dirt-regular {
+  font-family: "Rubik Dirt", serif;
+  font-weight: 400;
+  font-style: normal;
 }
 
 * {box-sizing:border-box}
 
 /* Slideshow container */
 .slideshow-container {
-  max-width: 1000px;
+  max-width: 80vh;
   position: relative;
   margin: auto;
-
 }
 
 .mySlides img {
@@ -88,6 +180,7 @@ a {
 /* Hide the images by default */
 .mySlides {
   display: none;
+  height: 100%;
 }
 
 /* Next & previous buttons */
@@ -171,3 +264,30 @@ a {
   from {opacity: .4}
   to {opacity: 1}
 }
+
+@media (min-width: 550px) {
+  nav > .fa-bars{
+    display: none;
+  }
+
+  nav {
+    flex-direction: row;
+  }
+}
+
+@media (max-width: 550px) {
+  nav > div {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .hidden--mobile {
+    display: none;
+  }
+
+  .fa-bars {
+    box-shadow: 2px 2px black;
+  }
+}
+
+
