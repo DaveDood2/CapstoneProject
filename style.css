@@ -1,3 +1,4 @@
+/*#region variables-and-colors */
 :root {
   --primary-color: rgb(86, 151, 70);
   --primary-darker: rgb(50, 56, 44);
@@ -17,12 +18,15 @@
   --blueberry-solid: rgb(79, 96, 250);
   --blueberry-back: rgb(179, 225, 255);
 }
+/*#endregion*/
 
+/*#region general-styling */
 .hero {
-  background-image: url(peasintSpinProfile.gif);
-  background-size: cover;
+  background-image: url(assets/img/peasintSpinProfile.gif);
+  /* background-blend-mode:multiply; */
+  background-size:contain;
   background-repeat:repeat;
-  height: 70vh;
+  height: 200px;
 }
 
 .hero > a {
@@ -31,6 +35,7 @@
   font-size: 1.5em;
   padding: 1.5rem;
   border-radius: 10px;
+  border-color: var(--primary-darker);
 }
 
 header, h2 {
@@ -70,14 +75,12 @@ canvas {
   background-color: white;
 }
 
-nav > div, nav {
-  /* text-align: center;*/
+/* nav > div, nav {
   margin: 20px;
   display: flex;
   flex-direction: row;
   justify-content: center;
-  /* align-items: center; */
-}
+} */
 
 p, nav a {
   font-size: 25px;
@@ -88,8 +91,8 @@ p, nav a {
   border: 5px solid rgb(6, 48, 0);
   box-shadow: 5px 5px black;
   padding: 10px;
-  margin-left: 10%;
-  margin-right: 10%;
+  /* margin-left: 10%;
+  margin-right: 10%; */
   width: fit-content;
 }
 
@@ -102,9 +105,6 @@ a {
   color: aqua;
 }
 
-.shake {
-  animation: shake 0.8s normal;
-}
 
 button:hover, a:hover {
   border: 5px dotted var(--text-primary-color);
@@ -114,41 +114,14 @@ button {
   border: 5px solid var(--primary-darker);
 }
 
-@keyframes shake{
-  0%{
-    transform: translateY(0)
-  }
-  25%{
-    transform: translateY(5px);
-  }
+* {box-sizing:border-box}
+/*#endregion */
 
-  50%{
-    transform: translateY(-5px);
-  }
-  100%{
-    transform: translateY(0px);
-  }
-}
-
-.appear {
-  animation: appear 5s ;
-}
-
-@keyframes appear{
-  0%{
-    opacity: 0%;
-  }
-  100%{
-    opacity: 50%;
-  }
-}
-
+/*#region fonts */
 @font-face {
   font-family: "permanentMarker";
-  src: url("Permanentmarker-Regular.ttf");
+  src: url("assets/font/Permanentmarker-Regular.ttf");
 }
-
-
 
 .roboto-mono {
   font-family: "Roboto Mono", serif;
@@ -162,15 +135,17 @@ button {
   font-weight: 400;
   font-style: normal;
 }
+/*#endregion */
 
-* {box-sizing:border-box}
-
+/*#region image-carousel */
 /* Slideshow container */
 .slideshow-container {
   max-width: 80vh;
   position: relative;
   margin: auto;
 }
+
+
 
 .mySlides img {
   border-radius: 10px;
@@ -254,6 +229,9 @@ button {
   background-color: #717171;
 }
 
+/*#endregion*/
+
+/*#region animations */
 /* Fading animation */
 .fade {
   animation-name: fade;
@@ -265,13 +243,50 @@ button {
   to {opacity: 1}
 }
 
+.shake {
+  animation: shake 0.8s normal;
+}
+
+@keyframes shake{
+  0%{
+    transform: translateY(0)
+  }
+  25%{
+    transform: translateY(5px);
+  }
+
+  50%{
+    transform: translateY(-5px);
+  }
+  100%{
+    transform: translateY(0px);
+  }
+}
+
+.appear {
+  animation: appear 5s ;
+}
+
+@keyframes appear{
+  0%{
+    opacity: 0%;
+  }
+  100%{
+    opacity: 50%;
+  }
+}
+/*#endregion*/
+
+/*#region mobile-adjustments */
 @media (min-width: 550px) {
   nav > .fa-bars{
     display: none;
   }
 
   nav {
+    display: flex;
     flex-direction: row;
+    justify-content:center;
   }
 }
 
@@ -287,7 +302,9 @@ button {
 
   .fa-bars {
     box-shadow: 2px 2px black;
+    width: 50px;
+    align-self: center;
   }
 }
-
+/*#endregion*/
 

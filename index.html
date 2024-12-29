@@ -19,31 +19,8 @@
 />
 </head>
 <body>
-  <header class="hero">
-    <h1 class="rubik-dirt-regular">Monster Maker</h1>
-    <a href="start_drawing.html"><i class="fa-solid fa-paintbrush"></i> Start drawing! <i class="fa-solid fa-paintbrush"></i></a>
-  </header>
-  <nav>
-    <i class="fas fa-bars"></i>
-    <div class="hidden--mobile">
-
-      <a href="about.html">About</a>
-      <a href="contact.html">Contact</a>
-    </div>
-  </nav>
-  <main>
-    <img id="monsterMakerBack" src="monsterMaker.jpg" class="appear">
-
-    <canvas id="myCanvas" width="300" height="150"></canvas>
-
-    <script src="draw.js"></script>
-    <script src="index.js"></script>
-    <p>
-    <button onclick="save()">Output</button>
-    </p>
-  </main>
-  <footer>
-    By Lucy
-  </footer>
+  <div id="root"></div>
+  <script type="module" src="index.js"></script>
+  <script src="slides.js"></script>
 </body>
 </html>
