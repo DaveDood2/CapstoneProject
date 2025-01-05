@@ -1,4 +1,5 @@
 export default {
   header: "Welcome to Monster Maker!",
-  view: "home"
+  view: "home",
+  pizzas: []
 };

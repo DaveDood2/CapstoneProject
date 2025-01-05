@@ -2,7 +2,7 @@ import html from "html-literal";
 export default () => html`
   <main>
     <h2>
-      <form action="https://formspree.io/f/mgvegnea" method="POST">
+      <form id="drawForm">
         <p>
           <label for="name">Name:</label>
           <input
@@ -86,9 +86,8 @@ export default () => html`
           <label for="monsterUpload">Choose monster file to continue:</label>
           <input type="file" name="monsterUpload" />
         </p>
-        <p>
-          <input type="submit" value="Submit" />
-        </p>
+
+        <input type="submit" value="Submit" class="submit" />
       </form>
     </h2>
   </main>
