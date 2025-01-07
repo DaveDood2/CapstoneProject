@@ -1,7 +1,29 @@
-const c = document.getElementById("myCanvas");
-const m = document.querySelector("main");
-const ctx = c.getContext("2d");
+let c;
+let m;
+let ctx;
 let isDrawing = false;
+
+function initializeCanvas() {
+  c = document.getElementById("myCanvas");
+  m = document.querySelector("main");
+  ctx = c.getContext("2d");
+
+  m.addEventListener("mousedown", event => {
+    beginDrawing(getCursorPosition(event));
+  });
+
+  m.addEventListener("mousemove", event => {
+    console.log("mouse down?", event.buttons);
+    if (event.buttons === 1) draw(getCursorPosition(event));
+    else {
+      endDrawing(getCursorPosition(event));
+    }
+  });
+
+  m.addEventListener("mouseup", event => {
+    endDrawing(getCursorPosition(event));
+  });
+}
 
 function getCursorPosition(event) {
   const rect = c.getBoundingClientRect();
@@ -10,22 +32,6 @@ function getCursorPosition(event) {
   //console.log("drawing at", x, y);
   return [x, y];
 }
-
-m.addEventListener("mousedown", event => {
-  beginDrawing(getCursorPosition(event));
-});
-
-m.addEventListener("mousemove", event => {
-  console.log("mouse down?", event.buttons);
-  if (event.buttons === 1) draw(getCursorPosition(event));
-  else {
-    endDrawing(getCursorPosition(event));
-  }
-});
-
-m.addEventListener("mouseup", event => {
-  endDrawing(getCursorPosition(event));
-});
 
 function beginDrawing(coords) {
   //console.log(coords);

@@ -10,6 +10,7 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
+    "@faker-js/faker": "^9.3.0",
     "buffer": "^6.0.3",
     "eslint": "^8.4.1",
     "eslint-config-prettier": "^6.15.0",

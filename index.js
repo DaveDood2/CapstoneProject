@@ -9,6 +9,8 @@ import axios from "axios";
 const router = new Navigo("/");
 import * as slides from "./slides";
 
+import { faker } from '@faker-js/faker';
+
 function render(state = store.home) {
   console.log("Rendered:", state.view);
   document.querySelector("#root").innerHTML = `
@@ -25,6 +27,9 @@ function render(state = store.home) {
       break;
     case store.startDrawing:
       initializeForm();
+      break;
+    case store.drawing:
+      initializeCanvas();
       break;
   }
 }
@@ -51,6 +56,18 @@ router.hooks({
           })
           .catch((error) => {
             console.log("It puked", error);
+            done();
+          });
+          break;
+      case "startDrawing":
+        axios
+          .get('https://esm.sh/@faker-js/faker')
+          .then(response => {
+            console.log("response:", response);
+            done();
+          })
+          .catch((error) => {
+            console.log("mom i frew up:", error);
             done();
           });
           break;

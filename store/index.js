@@ -4,3 +4,4 @@ export { default as links } from "./links";
 export { default as startDrawing } from "./startDrawing";
 export { default as contact } from "./contact";
 export { default as viewNotFound } from "./viewNotFound";
+export { default as drawing } from "./drawing";
