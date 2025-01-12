@@ -21,6 +21,18 @@
 /*#endregion*/
 
 /*#region general-styling */
+
+/*#region canvas-styling */
+.drawing {
+
+}
+
+canvas {
+  border:1px solid grey;
+  background-color: white;
+}
+/*#endregion */
+
 .hero {
   background-image: url(assets/img/peasintSpinProfile.gif);
   /* background-blend-mode:multiply; */
@@ -70,10 +82,7 @@ body {
   mix-blend-mode:color-dodge;
 }
 
-canvas {
-  border:1px solid grey;
-  background-color: white;
-}
+
 
 /* nav > div, nav {
   margin: 20px;

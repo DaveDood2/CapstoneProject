@@ -7,9 +7,6 @@ import Navigo from "navigo";
 import { camelCase } from "lodash";
 import axios from "axios";
 const router = new Navigo("/");
-import * as slides from "./slides";
-
-import { faker } from '@faker-js/faker';
 
 function render(state = store.home) {
   console.log("Rendered:", state.view);
