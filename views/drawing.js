@@ -7,6 +7,8 @@ export default state => html`
       <p>
         <button onclick="save()">Output</button>
       </p>
+      <p>Random words test</p>
+      <p id="prompts"></p>
     </div>
   </main>
 `;

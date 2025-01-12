@@ -35,6 +35,18 @@ function initializeCanvas() {
   m.addEventListener("mouseup", event => {
     endDrawing(getCursorPosition(event));
   });
+
+  populatePrompts();
+}
+
+function populatePrompts() {
+  let promptDisplay = document.querySelector("#prompts");
+  fetch("https://random-word-form.herokuapp.com/random/adjective?count=5")
+    .then(response => response.json())
+    .then(json => {
+      console.log(json);
+      promptDisplay.innerHTML = json;
+    });
 }
 
 function getCursorPosition(event) {
