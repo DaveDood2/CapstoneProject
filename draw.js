@@ -77,16 +77,15 @@ function endDrawing(coords) {
   ctx.moveTo(coords[0], coords[1]);
 }
 
-function save() {
+function saveDrawing() {
   console.log("Saving!");
   const rect = c.getBoundingClientRect();
   let img = ctx.getImageData(0, 0, rect.width, rect.height);
   //let img = ctx.getImageData(0, 0, 50, 50);
-  console.log(img.data);
-  printPixelData(img.data);
+  return getPixelData(img.data);
 }
 
-function printPixelData(imageData) {
+async function getPixelData(imageData) {
   const rect = c.getBoundingClientRect();
   let outputString = "";
   for (let i = 0; i < imageData.length; i += 4) {
@@ -98,11 +97,49 @@ function printPixelData(imageData) {
       outputString += "0";
     }
   }
+  //outputString = await compressData(outputString);
+  const compressedReadableStream = outputString.pipeThrough(
+    new CompressionStream("gzip")
+  );
+  console.log(typeof outputString);
   let monsterData = {
-    portion: 0, // 0 = head, 1 = torso, 2 = legs
+    name0: "juicy!",
+    word0: "What",
+    progress: 0, // 0 = head, 1 = torso, 2 = legs
     width: rect.width,
     height: rect.height,
-    pixelData: outputString
+    canvas: compressedReadableStream
   };
-  console.log(monsterData);
+  return monsterData;
+}
+
+// Function to compress data using Gzip
+async function compressData(data) {
+  // Create a new Gzip stream
+  const compressionStream = new CompressionStream("gzip");
+
+  // Use a TextEncoder to convert a string to a Uint8Array
+  const uint8Data = new TextEncoder().encode(data);
+
+  // Create a new ReadableStream from the source data
+  const readableStream = new ReadableStream({
+    start(controller) {
+      controller.enqueue(uint8Data);
+      controller.close();
+    }
+  });
+
+  // Pipe the ReadableStream through the compressionStream to get a compressed stream
+  const compressedStream = readableStream.pipeThrough(compressionStream);
+
+  // Collect the compressed chunks back into a single blob
+  const chunks = [];
+  const reader = compressedStream.getReader();
+  while (true) {
+    const { done, value } = await reader.read();
+    if (done) break;
+    chunks.push(value);
+  }
+
+  return new Blob(chunks);
 }

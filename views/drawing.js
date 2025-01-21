@@ -5,7 +5,7 @@ export default state => html`
     <div id="canvases">
       <canvas class="canvas" id="myCanvas" width="300" height="450"></canvas>
       <p>
-        <button onclick="save()">Output</button>
+        <button id="save">Save</button>
       </p>
       <p>Random words test</p>
       <p id="prompts"></p>

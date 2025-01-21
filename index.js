@@ -6,6 +6,7 @@ import * as store from "./store";
 import Navigo from "navigo";
 import { camelCase } from "lodash";
 import axios from "axios";
+
 const router = new Navigo("/");
 
 function render(state = store.home) {
@@ -44,27 +45,14 @@ router.hooks({
       case "home":
         // New Axios get request utilizing already made environment variable
         axios
-          .get(`https://sc-pizza-api.onrender.com/pizzas`)
+          .get(`${process.env.API_URL}/monsters`)
           .then(response => {
             // We need to store the response to the state, in the next step but in the meantime let's see what it looks like so that we know what to store from the response.
             console.log("response", response);
-            store.home.pizzas = response.data;
             done();
           })
           .catch((error) => {
             console.log("It puked", error);
-            done();
-          });
-          break;
-      case "startDrawing":
-        axios
-          .get('https://esm.sh/@faker-js/faker')
-          .then(response => {
-            console.log("response:", response);
-            done();
-          })
-          .catch((error) => {
-            console.log("mom i frew up:", error);
             done();
           });
           break;
@@ -88,46 +76,17 @@ router.hooks({
     //     document.querySelector("nav > ul").classList.toggle("hidden--mobile");
     // });
     if (view === "drawing") {
-      // Add an event handler for the submit button on the form
-      document.querySelector("form").addEventListener("submit", event => {
+      document.querySelector("#save").addEventListener("click", event => {
         event.preventDefault();
 
-        // Get the form element
-        const inputList = event.target.elements;
-        console.log("Input Element List", inputList);
-
-        // Create an empty array to hold the toppings
-        const toppings = [];
-
-        // Iterate over the toppings array
-
-        for (let input of inputList.toppings) {
-          // If the value of the checked attribute is true then add the value to the toppings array
-          if (input.checked) {
-            toppings.push(input.value);
-          }
-        }
-
         // Create a request body object to send to the API
-        const requestData = {
-          customer: inputList.customer.value,
-          crust: inputList.crust.value,
-          cheese: inputList.cheese.value,
-          sauce: inputList.sauce.value,
-          toppings: toppings
-        };
+        const requestData = saveDrawing();
         // Log the request body to the console
         console.log("request Body", requestData);
 
         axios
-          // Make a POST request to the API to create a new pizza
-          .post(`${process.env.MONGODB}/monsters`, requestData)
-          .then(response => {
-          //  Then push the new pizza onto the Pizza state pizzas attribute, so it can be displayed in the pizza list
-            store.home.pizzas.push(response.data);
-            router.navigate("/home");
-          })
-          // If there is an error log it to the console
+          // Make a POST request to the API to create a new monster
+          .post(`${process.env.API_URL}/monsters`, requestData)
           .catch(error => {
             console.log("It puked", error);
           });

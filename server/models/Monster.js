@@ -30,13 +30,32 @@ const monsterScheme = new mongoose.Schema({
     validate: /^[A-Za-z]*$/
   },
   canvas: {
-    type: [Boolean],
+    type: Object,
+    required: true
+    // validate: /^[01]*$/
+    // validate: {
+    //   validator: function(canvas) {
+    //     return true;
+    //   },
+    //   message: "Canvas is invalid!"
+    // }
+  },
+  width: {
+    type: Number,
     required: true,
     validate: {
-      validator: function(canvas) {
-        return true;
-      },
-      message: "Canvas is invalid!"
+      validator: function(width) {
+        return width > 0 && Number.isInteger(width);
+      }
+    }
+  },
+  height: {
+    type: Number,
+    required: true,
+    validate: {
+      validator: function(height) {
+        return height > 0 && Number.isInteger(height);
+      }
     }
   },
   progress: {
