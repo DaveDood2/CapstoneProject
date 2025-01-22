@@ -1,9 +1,11 @@
+import { map } from "lodash";
+
 let c;
 let m;
 let ctx;
 let currentColor = "black";
 
-function initializeCanvas() {
+export function initializeCanvas() {
   c = document.getElementById("myCanvas");
   //c = document.querySelectorAll(".canvas");
   m = document.querySelector("main");
@@ -77,11 +79,10 @@ function endDrawing(coords) {
   ctx.moveTo(coords[0], coords[1]);
 }
 
-function saveDrawing() {
+export function saveDrawing() {
   console.log("Saving!");
   const rect = c.getBoundingClientRect();
   let img = ctx.getImageData(0, 0, rect.width, rect.height);
-  //let img = ctx.getImageData(0, 0, 50, 50);
   return getPixelData(img.data);
 }
 
@@ -97,49 +98,89 @@ async function getPixelData(imageData) {
       outputString += "0";
     }
   }
-  //outputString = await compressData(outputString);
-  const compressedReadableStream = outputString.pipeThrough(
-    new CompressionStream("gzip")
-  );
-  console.log(typeof outputString);
+
+  let packedString = await compress(outputString);
+  console.log("compressed in getPixelData:", typeof packedString);
   let monsterData = {
-    name0: "juicy!",
-    word0: "What",
-    progress: 0, // 0 = head, 1 = torso, 2 = legs
+    name0: "LoadTest",
+    word0: "Wowie",
+    progress: 2, // 0 = head, 1 = torso, 2 = legs
     width: rect.width,
     height: rect.height,
-    canvas: compressedReadableStream
+    canvas: packedString
   };
   return monsterData;
 }
 
-// Function to compress data using Gzip
-async function compressData(data) {
-  // Create a new Gzip stream
-  const compressionStream = new CompressionStream("gzip");
+export async function loadDrawing(monster, canvas) {
+  console.log("Loading canvas of size:", monster.width, monster.height);
 
-  // Use a TextEncoder to convert a string to a Uint8Array
-  const uint8Data = new TextEncoder().encode(data);
-
-  // Create a new ReadableStream from the source data
-  const readableStream = new ReadableStream({
-    start(controller) {
-      controller.enqueue(uint8Data);
-      controller.close();
+  console.log("In loadDrawing:", typeof monster.canvas, monster.canvas);
+  let inputString = await decompressBlob(monster.canvas);
+  console.log("InputString in Load", inputString);
+  let ctx = canvas.getContext("2d");
+  const rect = canvas.getBoundingClientRect();
+  console.log("Onto canvas of size:", rect.width, rect.height);
+  let imgData = ctx.getImageData(0, 0, rect.width, rect.height);
+  for (let c = 0; c < inputString.length; c++) {
+    if (inputString[c] === "1") {
+      imgData.data[c * 4 + 0] = 0;
+      imgData.data[c * 4 + 1] = 0;
+      imgData.data[c * 4 + 2] = 0;
+      imgData.data[c * 4 + 3] = 255;
     }
+  }
+  ctx.putImageData(imgData, 0, 0);
+}
+
+// Credit for (de)compressing strings:
+// https://evanhahn.com/javascript-compression-streams-api-with-strings/
+async function compress(data) {
+  const stream = new Blob([data]).stream();
+  const compressedReadableStream = stream.pipeThrough(
+    new CompressionStream("gzip")
+  );
+  const chunks = [];
+  for await (const chunk of compressedReadableStream) {
+    chunks.push(chunk);
+  }
+  return await concatUint8Arrays(chunks);
+}
+
+async function decompressBlob(compressedData) {
+  let Uint8ArrayData = [];
+  Object.values(compressedData).forEach(element => {
+    Uint8ArrayData.push(element);
   });
 
-  // Pipe the ReadableStream through the compressionStream to get a compressed stream
-  const compressedStream = readableStream.pipeThrough(compressionStream);
+  //console.log("Compressed data in load:", compressedData);
+  Uint8ArrayData = new Uint8Array(Uint8ArrayData);
+  console.log("UintArray", typeof Uint8ArrayData, Uint8ArrayData);
+  const stream = new Blob([Uint8ArrayData]).stream();
 
-  // Collect the compressed chunks back into a single blob
+  const decompressedStream = stream.pipeThrough(
+    new DecompressionStream("gzip")
+  );
+
   const chunks = [];
-  const reader = compressedStream.getReader();
-  while (true) {
-    const { done, value } = await reader.read();
-    if (done) break;
-    chunks.push(value);
+  for await (const chunk of decompressedStream) {
+    chunks.push(chunk);
   }
+  const stringBytes = await concatUint8Arrays(chunks);
 
-  return new Blob(chunks);
+  return new TextDecoder().decode(stringBytes);
+}
+
+async function concatUint8Arrays(uint8arrays) {
+  const blob = new Blob(uint8arrays);
+  const buffer = await blob.arrayBuffer();
+  return new Uint8Array(buffer);
+}
+
+async function testCompression() {
+  const str = "foo".repeat(1000);
+  const compressedBytes = await compress(str);
+  console.log(compressedBytes, typeof compressedBytes);
+  const decompressed = await decompressBlob(compressedBytes);
+  console.log(decompressed);
 }

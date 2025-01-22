@@ -6,6 +6,7 @@ import * as store from "./store";
 import Navigo from "navigo";
 import { camelCase } from "lodash";
 import axios from "axios";
+import { initializeCanvas, saveDrawing, loadDrawing } from "./draw";
 
 const router = new Navigo("/");
 
@@ -45,10 +46,12 @@ router.hooks({
       case "home":
         // New Axios get request utilizing already made environment variable
         axios
-          .get(`${process.env.API_URL}/monsters`)
+          .get(`${process.env.API_URL}/monsters?progress=2`)
           .then(response => {
             // We need to store the response to the state, in the next step but in the meantime let's see what it looks like so that we know what to store from the response.
             console.log("response", response);
+            let randomMonster = response.data[Math.floor(Math.random() * response.data.length)];
+            store.home.monster = randomMonster;
             done();
           })
           .catch((error) => {
@@ -80,19 +83,25 @@ router.hooks({
         event.preventDefault();
 
         // Create a request body object to send to the API
-        const requestData = saveDrawing();
+        const requestData = saveDrawing().then((value) => {
+          console.log("Here's what we're sendin':", value);
+          axios
+          // Make a POST request to the API to create a new monster
+          .post(`${process.env.API_URL}/monsters`, value)
+          .catch(error => {
+            console.log("It puked", error);
+          })
+        });
         // Log the request body to the console
         console.log("request Body", requestData);
 
-        axios
-          // Make a POST request to the API to create a new monster
-          .post(`${process.env.API_URL}/monsters`, requestData)
-          .catch(error => {
-            console.log("It puked", error);
-          });
+
       });
     }
-
+    else if (view === "home") {
+      let canvas = document.querySelector("#displayCanvas");
+      loadDrawing(store.home.monster, canvas);
+    }
   }
 });
 
