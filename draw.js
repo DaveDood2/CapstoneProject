@@ -82,17 +82,14 @@ function endDrawing(coords) {
 export function saveDrawing() {
   console.log("Saving!");
   const rect = c.getBoundingClientRect();
-  let img = ctx.getImageData(0, 0, rect.width, rect.height);
+  let img = ctx.getImageData(0, 0, c.width, c.height);
   return getPixelData(img.data);
 }
 
 async function getPixelData(imageData) {
-  const rect = c.getBoundingClientRect();
   let outputString = "";
   for (let i = 0; i < imageData.length; i += 4) {
-    if ((i / 4) % rect.width === 0) {
-      //outputString += "\n";
-    } else if (imageData[i + 3] && !imageData[i]) {
+    if (imageData[i + 3] && !imageData[i]) {
       outputString += "1";
     } else {
       outputString += "0";
@@ -105,8 +102,8 @@ async function getPixelData(imageData) {
     name0: "LoadTest",
     word0: "Wowie",
     progress: 2, // 0 = head, 1 = torso, 2 = legs
-    width: rect.width,
-    height: rect.height,
+    width: c.width,
+    height: c.height,
     canvas: packedString
   };
   return monsterData;
@@ -114,14 +111,11 @@ async function getPixelData(imageData) {
 
 export async function loadDrawing(monster, canvas) {
   console.log("Loading canvas of size:", monster.width, monster.height);
-
-  console.log("In loadDrawing:", typeof monster.canvas, monster.canvas);
+  canvas.width = monster.width;
+  canvas.height = monster.height;
   let inputString = await decompressBlob(monster.canvas);
-  console.log("InputString in Load", inputString);
   let ctx = canvas.getContext("2d");
-  const rect = canvas.getBoundingClientRect();
-  console.log("Onto canvas of size:", rect.width, rect.height);
-  let imgData = ctx.getImageData(0, 0, rect.width, rect.height);
+  let imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
   for (let c = 0; c < inputString.length; c++) {
     if (inputString[c] === "1") {
       imgData.data[c * 4 + 0] = 0;
