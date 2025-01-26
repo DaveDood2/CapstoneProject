@@ -29,7 +29,25 @@
 
 canvas {
   border:1px solid grey;
-  background-color: white;
+  background-color: rgba(255, 255, 255, 0.616);
+  background-image: url(assets/img/MonsterMakerCanvasBack.png);
+}
+
+.horizontal {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  margin: 50px;
+}
+
+#toolbar {
+  display: flex;
+  flex-direction: column;
+  padding: 15px;
+}
+
+#drawInstructions {
+  padding: 25px;
 }
 /*#endregion */
 

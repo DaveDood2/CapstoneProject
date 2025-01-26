@@ -4,6 +4,7 @@ let c;
 let m;
 let ctx;
 let currentColor = "black";
+let penSize = 10;
 
 export function initializeCanvas() {
   c = document.getElementById("myCanvas");
@@ -11,8 +12,14 @@ export function initializeCanvas() {
   m = document.querySelector("main");
 
   ctx = c.getContext("2d");
+
   //ctx = Array.from(c).map(x => x.getContext("2d"));
   //console.log(ctx);
+
+  document.querySelector("#penSize").addEventListener("input", (event) => {
+    penSize = event.target.value;
+    document.querySelector("#penSizeLabel").textContent = `Pen Size: ${event.target.value}`;
+  });
 
   document.addEventListener("contextmenu", event => {
     event.preventDefault();
@@ -24,10 +31,12 @@ export function initializeCanvas() {
 
   m.addEventListener("mousemove", event => {
     if (event.buttons === 1) {
+      ctx.globalCompositeOperation = "source-over";
       currentColor = "black";
       draw(getCursorPosition(event));
     } else if (event.buttons === 2) {
-      currentColor = "white";
+      ctx.globalCompositeOperation = "destination-out";
+      currentColor = "rgba(255, 255, 255, 1)";
       draw(getCursorPosition(event));
     } else {
       endDrawing(getCursorPosition(event));
@@ -63,11 +72,11 @@ function beginDrawing(coords) {
   //console.log(coords);
   ctx.beginPath();
   ctx.moveTo(coords[0], coords[1]);
-  ctx.lineWidth = 10;
+  ctx.lineWidth = penSize;
 }
 
 function draw(coords) {
-  ctx.lineWidth = 10;
+  ctx.lineWidth = penSize;
   ctx.strokeStyle = currentColor;
   ctx.lineTo(coords[0], coords[1]);
   ctx.stroke();
