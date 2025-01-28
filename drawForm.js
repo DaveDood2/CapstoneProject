@@ -4,7 +4,7 @@ let submitButton;
 let form;
 let newOrContinueButtons;
 
-function initializeForm() {
+export function initializeForm() {
   showIfNew = document.querySelector(".showIfNew");
   showIfContinuing = document.querySelector(".showIfContinuing");
   submitButton = document.querySelector(".submit");
@@ -26,6 +26,10 @@ function initializeForm() {
 function submitForm(event) {
   console.log("Submitted form!");
   event.preventDefault();
+}
+
+export function getFormData() {
+  return new FormData(document.getElementById("drawForm"));
 }
 
 function updateNewOrContinue() {

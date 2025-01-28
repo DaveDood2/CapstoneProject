@@ -1,4 +1,5 @@
 import { map } from "lodash";
+import * as store from "./store";
 
 let c;
 let m;
@@ -16,9 +17,11 @@ export function initializeCanvas() {
   //ctx = Array.from(c).map(x => x.getContext("2d"));
   //console.log(ctx);
 
-  document.querySelector("#penSize").addEventListener("input", (event) => {
+  document.querySelector("#penSize").addEventListener("input", event => {
     penSize = event.target.value;
-    document.querySelector("#penSizeLabel").textContent = `Pen Size: ${event.target.value}`;
+    document.querySelector(
+      "#penSizeLabel"
+    ).textContent = `Pen Size: ${event.target.value}`;
   });
 
   document.addEventListener("contextmenu", event => {
@@ -108,13 +111,16 @@ async function getPixelData(imageData) {
   let packedString = await compress(outputString);
   console.log("compressed in getPixelData:", typeof packedString);
   let monsterData = {
-    name0: "LoadTest",
-    word0: "Wowie",
-    progress: 2, // 0 = head, 1 = torso, 2 = legs
+    ...store.drawing.monster,
+    //name0: store.startDrawing.artist,
+    word0: "aaaaa",
+    //progress: store.startDrawing.progress, // 0 = head, 1 = torso, 2 = legs
     width: c.width,
     height: c.height,
     canvas: packedString
   };
+  console.log("sending:", monsterData);
+  console.log("Already in store:", store.drawing.monster);
   return monsterData;
 }
 

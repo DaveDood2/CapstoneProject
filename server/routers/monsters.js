@@ -100,4 +100,37 @@ router.put("/:id", async (request, response) => {
   }
 });
 
+// Update a single monster by ID
+router.patch("/:id", async (request, response) => {
+  try {
+    const body = request.body;
+
+    const data = await Monster.findByIdAndUpdate(
+      request.params.id,
+      {
+        $set: {
+          name1: body.name1,
+          word1: body.word1,
+          canvas: body.canvas,
+          progress: body.progress
+        }
+      },
+      {
+        new: true,
+        runValidators: true
+      }
+    );
+
+    response.json(data);
+  } catch (error) {
+    // Output error to the console incase it fails to send in response
+    console.log(error);
+
+    if ("name" in error && error.name === "ValidationError")
+      return response.status(400).json(error.errors);
+
+    return response.status(500).json(error.errors);
+  }
+});
+
 export default router;

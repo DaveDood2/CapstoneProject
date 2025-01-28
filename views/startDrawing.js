@@ -38,7 +38,7 @@ export default () => html`
           <label for="continueMonster">Continue Monster</label><br />
         </p>
         <p class="showIfNew">
-          <label for="sacrificialFruit"
+          <!-- <label for="sacrificialFruit"
             >New monsters require a sacrificial fruit. Choose wisely!</label
           >
           <br />
@@ -83,10 +83,15 @@ export default () => html`
             required
           />
           <label for="blueberry">Blueberry</label><br />
+        </p> -->
         </p>
+
         <p class="showIfContinuing">
-          <label for="monsterUpload">Choose monster file to continue:</label>
-          <input type="file" name="monsterUpload" />
+          <label for="monsterUpload"
+            >Paste monster ID to continue, or leave blank to continue a random
+            monster:</label
+          >
+          <input type="text" name="monsterUpload" />
         </p>
 
         <input type="submit" value="Submit" class="submit" />
