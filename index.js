@@ -6,7 +6,7 @@ import * as store from "./store";
 import Navigo from "navigo";
 import { camelCase } from "lodash";
 import axios from "axios";
-import { initializeCanvas, saveDrawing, loadDrawing } from "./draw";
+import { initializeCanvas, saveDrawing, loadDrawing, setMonsterData } from "./draw";
 import { getFormData, initializeForm } from "./drawForm";
 import { initializeSlides } from "./slides";
 
@@ -106,28 +106,29 @@ router.hooks({
     }
     else if (view === "startDrawing") {
       let startDrawingForm = document.querySelector("#drawForm")
-      console.log("form:", startDrawingForm)
       startDrawingForm.addEventListener("submit", event => {
         event.preventDefault();
         let formData = getFormData();
-        console.log("Received form:", formData)
-        if (formData.newOrContinue === "newMonster") {
+        if (formData.get("newOrContinue")  === "newMonster") {
           // Create a new monster
           store.drawing.monster = {
-            name0: formData.name,
+            name0: formData.get("name"),
             progress: 0
           }
-        } else if (formData.newOrContinue === "continueMonster"){
-          if (formData.monsterUpload === ""){
+        } else if (formData.get("newOrContinue") === "continueMonster"){
+          if (formData.get("monsterUpload") === ""){
             // Pick an unfinished monster at random
             axios
-              .get(`${process.env.API_URL}/monsters?progress=0?progress=1`)
+              .get(`${process.env.API_URL}/monsters?progress=0&progress=1`)
               .then(response => {
                 // We need to store the response to the state, in the next step but in the meantime let's see what it looks like so that we know what to store from the response.
                 console.log("response", response);
                 let randomMonster = response.data[Math.floor(Math.random() * response.data.length)];
                 store.drawing.monster = randomMonster;
-
+                console.log("Here's what the monster is so far", store.drawing.monster);
+                console.assert(store.drawing.monster.progress in [0, 1], store.drawing.monster.progress);
+                store.drawing.monster.progress += 1;
+                store.drawing.monster["name" + store.drawing.monster.progress] = formData.get("name");
                 done();
               })
               .catch((error) => {
@@ -136,13 +137,17 @@ router.hooks({
               });
           }
           else {
-            // Attempt to load monster
+            // Attempt to load specific monster
             axios
-              .get(`${process.env.API_URL}/monsters/${formData.monsterUpload}?progress=0?progress=1`)
+              .get(`${process.env.API_URL}/monsters/${formData.get("monsterUpload")}?progress=0&progress=1`)
               .then(response => {
                 // We need to store the response to the state, in the next step but in the meantime let's see what it looks like so that we know what to store from the response.
                 console.log("response", response);
                 store.drawing.monster = response.data;
+                console.log("Here's what the monster is so far", store.drawing.monster);
+                console.assert(store.drawing.monster.progress in [0, 1], store.drawing.monster.progress);
+                store.drawing.monster.progress += 1;
+                store.drawing.monster["name" + store.drawing.monster.progress] = formData.get("name");
                 done();
               })
               .catch((error) => {
@@ -150,9 +155,9 @@ router.hooks({
                 done();
               });
           }
-          store.drawing.monster.progress += 1;
         }
         router.navigate("/drawing");
+        setMonsterData(store.drawing.monster);
       });
     }
     else if (view === "drawing") {

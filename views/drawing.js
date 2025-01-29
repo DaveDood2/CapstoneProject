@@ -3,7 +3,7 @@ export default state => html`
   <main>
     <div class="horizontal">
       <p id="toolbar">
-        <input type="range" id="penSize" name="penSize" min="1" max="20">
+        <input type="range" id="penSize" name="penSize" min="1" max="20" />
         <label for="penSize" id="penSizeLabel">Pen Size: 10</label>
         <button>asdfasdf</button>
         <button>asdfasdf</button>
@@ -12,7 +12,7 @@ export default state => html`
         <canvas class="canvas" id="myCanvas" width="300" height="450"></canvas>
       </div>
       <div id="drawInstructions">
-        <p>You are drawing:<br>blah bloh blue</p>
+        <p>You are drawing:<br />${state.monster.progress}</p>
       </div>
     </div>
     <p>
@@ -20,6 +20,5 @@ export default state => html`
     </p>
     <p>Random words test</p>
     <p id="prompts"></p>
-
   </main>
 `;

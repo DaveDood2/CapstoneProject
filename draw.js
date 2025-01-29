@@ -6,6 +6,7 @@ let m;
 let ctx;
 let currentColor = "black";
 let penSize = 10;
+let monsterObject = null;
 
 export function initializeCanvas() {
   c = document.getElementById("myCanvas");
@@ -98,6 +99,11 @@ export function saveDrawing() {
   return getPixelData(img.data);
 }
 
+export function setMonsterData(theMonsterInQuestion) {
+  console.log("Setting monster data:", theMonsterInQuestion);
+  monsterObject = theMonsterInQuestion;
+}
+
 async function getPixelData(imageData) {
   let outputString = "";
   for (let i = 0; i < imageData.length; i += 4) {
@@ -111,7 +117,7 @@ async function getPixelData(imageData) {
   let packedString = await compress(outputString);
   console.log("compressed in getPixelData:", typeof packedString);
   let monsterData = {
-    ...store.drawing.monster,
+    ...monsterObject,
     //name0: store.startDrawing.artist,
     word0: "aaaaa",
     //progress: store.startDrawing.progress, // 0 = head, 1 = torso, 2 = legs
@@ -120,11 +126,12 @@ async function getPixelData(imageData) {
     canvas: packedString
   };
   console.log("sending:", monsterData);
-  console.log("Already in store:", store.drawing.monster);
+  console.log("Already in store:", monsterObject);
   return monsterData;
 }
 
 export async function loadDrawing(monster, canvas) {
+  console.log("Monster data:", monster);
   console.log("Loading canvas of size:", monster.width, monster.height);
   canvas.width = monster.width;
   canvas.height = monster.height;
