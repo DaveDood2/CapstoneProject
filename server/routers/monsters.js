@@ -71,24 +71,41 @@ router.delete("/:id", async (request, response) => {
 router.put("/:id", async (request, response) => {
   try {
     const body = request.body;
-
-    const data = await Monster.findByIdAndUpdate(
-      request.params.id,
-      {
-        $set: {
-          name1: body.name1,
-          word1: body.word1,
-          canvas: body.canvas,
-          progress: body.progress
+    if (body.progress === 1) {
+      const data = await Monster.findByIdAndUpdate(
+        request.params.id,
+        {
+          $set: {
+            name1: body.name1,
+            word1: body.word1,
+            canvas: body.canvas,
+            progress: body.progress
+          }
+        },
+        {
+          new: true,
+          runValidators: true
         }
-      },
-      {
-        new: true,
-        runValidators: true
-      }
-    );
-
-    response.json(data);
+      );
+      response.json(data);
+    } else if (body.progress === 2) {
+      const data = await Monster.findByIdAndUpdate(
+        request.params.id,
+        {
+          $set: {
+            name2: body.name2,
+            word2: body.word2,
+            canvas: body.canvas,
+            progress: body.progress
+          }
+        },
+        {
+          new: true,
+          runValidators: true
+        }
+      );
+      response.json(data);
+    }
   } catch (error) {
     // Output error to the console incase it fails to send in response
     console.log(error);

@@ -5,6 +5,7 @@ let c;
 let m;
 let ctx;
 let currentColor = "black";
+let currentlyDrawing = false;
 let penSize = 10;
 let monsterObject = null;
 
@@ -12,6 +13,10 @@ export function initializeCanvas() {
   c = document.getElementById("myCanvas");
   //c = document.querySelectorAll(".canvas");
   m = document.querySelector("main");
+
+  document.getElementById("cover").addEventListener("click", event => {
+    event.stopPropagation();
+  });
 
   ctx = c.getContext("2d");
 
@@ -24,6 +29,7 @@ export function initializeCanvas() {
       "#penSizeLabel"
     ).textContent = `Pen Size: ${event.target.value}`;
   });
+  penSize = 10;
 
   document.addEventListener("contextmenu", event => {
     event.preventDefault();
@@ -33,7 +39,8 @@ export function initializeCanvas() {
     beginDrawing(getCursorPosition(event));
   });
 
-  m.addEventListener("mousemove", event => {
+  c.addEventListener("mousemove", event => {
+    if (!currentlyDrawing) return;
     if (event.buttons === 1) {
       ctx.globalCompositeOperation = "source-over";
       currentColor = "black";
@@ -44,6 +51,18 @@ export function initializeCanvas() {
       draw(getCursorPosition(event));
     } else {
       endDrawing(getCursorPosition(event));
+    }
+  });
+
+  c.addEventListener("mouseleave", event => {
+    // let coords = getCursorPosition(event);
+    // ctx.moveTo(coords[0], coords[1]);
+    endDrawing(getCursorPosition(event));
+  });
+
+  c.addEventListener("mouseenter", event => {
+    if (event.buttons === 1 || event.buttons === 2) {
+      beginDrawing(getCursorPosition(event));
     }
   });
 
@@ -77,6 +96,7 @@ function beginDrawing(coords) {
   ctx.beginPath();
   ctx.moveTo(coords[0], coords[1]);
   ctx.lineWidth = penSize;
+  currentlyDrawing = true;
 }
 
 function draw(coords) {
@@ -90,6 +110,7 @@ function endDrawing(coords) {
   //ctx.closePath();
   //ctx.stroke();
   ctx.moveTo(coords[0], coords[1]);
+  currentlyDrawing = false;
 }
 
 export function saveDrawing() {
@@ -115,7 +136,6 @@ async function getPixelData(imageData) {
   }
 
   let packedString = await compress(outputString);
-  console.log("compressed in getPixelData:", typeof packedString);
   let monsterData = {
     ...monsterObject,
     //name0: store.startDrawing.artist,
@@ -125,14 +145,21 @@ async function getPixelData(imageData) {
     height: c.height,
     canvas: packedString
   };
-  console.log("sending:", monsterData);
-  console.log("Already in store:", monsterObject);
+  // console.log("sending:", monsterData);
+  // console.log("Already in store:", monsterObject);
   return monsterData;
 }
 
 export async function loadDrawing(monster, canvas) {
   console.log("Monster data:", monster);
-  console.log("Loading canvas of size:", monster.width, monster.height);
+  if (monster.progress in [0, 1, 2] === false) {
+    console.error("Tried to load an invalid monster!");
+    return;
+  }
+  updateDrawingInstructions(monster);
+  if (!monster.width || !monster.height) {
+    return;
+  }
   canvas.width = monster.width;
   canvas.height = monster.height;
   let inputString = await decompressBlob(monster.canvas);
@@ -147,6 +174,26 @@ export async function loadDrawing(monster, canvas) {
     }
   }
   ctx.putImageData(imgData, 0, 0);
+}
+
+function updateDrawingInstructions(monster) {
+  let instructions = document.getElementById("drawInstructions");
+  if (!instructions) return;
+  let partName = ["Head", "Torso", "Legs"][monster.progress];
+  let connectionInstructions = [
+    `Keep the bottom of the head unclosed,
+    leaving two lines just barely in the body section
+    so the torso drawer knows where to continue from.`,
+    `Continue the torso from the two lines the head drawer (hopefully) left you.
+    Keep the bottom of the torso unclosed,
+    and instead leave two lines hanging into the legs section,
+    so the legs drawer knows where to continue from.`,
+    `Continue drawing the legs from the two lines the torso drawer (hopefully) left you.
+    Since you are the last player to draw, you can close up the bottom of the legs.`
+  ][monster.progress];
+  instructions.innerHTML = `You are drawing the monster's ${partName}.
+
+  ${connectionInstructions}`;
 }
 
 // Credit for (de)compressing strings:

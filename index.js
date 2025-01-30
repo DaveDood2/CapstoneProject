@@ -32,6 +32,7 @@ function render(state = store.home) {
       break;
     case store.drawing:
       initializeCanvas();
+      let canvas = document.querySelector("#myCanvas");
       break;
   }
 }
@@ -82,23 +83,36 @@ router.hooks({
     //     document.querySelector("nav > ul").classList.toggle("hidden--mobile");
     // });
     if (view === "drawing") {
-      document.querySelector("#save").addEventListener("click", event => {
+      document.querySelector("#uploadForm").addEventListener("submit", event => {
+        setMonsterData(store.drawing.monster)
         event.preventDefault();
-
-        // Create a request body object to send to the API
+        // Create a request Wbody object to send to the API
         const requestData = saveDrawing(store.drawing.monster).then((value) => {
           console.log("Here's what we're sendin':", value);
-          axios
-          // Make a POST request to the API to create a new monster
-          .post(`${process.env.API_URL}/monsters`, value)
-          .catch(error => {
-            console.log("It puked", error);
-          })
+          if (value.progress === 0){
+              axios
+            // Make a POST request to the API to create a new monster
+            .post(`${process.env.API_URL}/monsters`, value)
+            .catch(error => {
+              console.log("It puked", error);
+            })
+          } else {
+              axios
+              // Make a POST request to the API to update monster
+              .put(`${process.env.API_URL}/monsters/${value._id}`, value)
+              .catch(error => {
+                console.log("It puked", error);
+            })
+          }
         });
-        // Log the request body to the console
-        console.log("request Body", requestData);
-
       });
+      if (store.drawing.monster.progress in [0,1,2]){
+        console.log("Trying to load monster:", store.drawing.monster);
+        let canvas = document.querySelector("#myCanvas");
+        loadDrawing(store.drawing.monster, canvas);
+      } else {
+        //router.navigate("/startDrawing");
+      }
     }
     else if (view === "home") {
       let canvas = document.querySelector("#displayCanvas");
@@ -115,6 +129,7 @@ router.hooks({
             name0: formData.get("name"),
             progress: 0
           }
+          loadMonster();
         } else if (formData.get("newOrContinue") === "continueMonster"){
           if (formData.get("monsterUpload") === ""){
             // Pick an unfinished monster at random
@@ -129,11 +144,12 @@ router.hooks({
                 console.assert(store.drawing.monster.progress in [0, 1], store.drawing.monster.progress);
                 store.drawing.monster.progress += 1;
                 store.drawing.monster["name" + store.drawing.monster.progress] = formData.get("name");
-                done();
+                loadMonster();
+                //done();
               })
               .catch((error) => {
                 console.log("It puked", error);
-                done();
+                //done();
               });
           }
           else {
@@ -148,21 +164,17 @@ router.hooks({
                 console.assert(store.drawing.monster.progress in [0, 1], store.drawing.monster.progress);
                 store.drawing.monster.progress += 1;
                 store.drawing.monster["name" + store.drawing.monster.progress] = formData.get("name");
-                done();
+                loadMonster();
+                //done();
               })
               .catch((error) => {
                 console.log("It puked", error);
-                done();
+                //done();
               });
           }
         }
-        router.navigate("/drawing");
-        setMonsterData(store.drawing.monster);
+
       });
-    }
-    else if (view === "drawing") {
-      let canvas = document.querySelector("#myCanvas");
-      loadDrawing(store.drawing.monster, canvas);
     }
   }
 });
@@ -189,3 +201,13 @@ router
   },
 })
 .resolve();
+
+function loadMonster(){
+  router.navigate("/drawing");
+  setMonsterData(store.drawing.monster);
+        let canvas = document.querySelector("#myCanvas");
+        if (store.drawing.monster.progress){
+          console.log("Trying to load monster:", store.drawing.monster);
+          loadDrawing(store.drawing.monster, canvas);
+        }
+}

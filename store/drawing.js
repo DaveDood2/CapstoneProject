@@ -1,5 +1,5 @@
 export default {
   header: "It's time.",
   view: "drawing",
-  monster: Object
+  monster: {}
 };
