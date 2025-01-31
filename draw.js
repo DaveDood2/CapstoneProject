@@ -69,18 +69,22 @@ export function initializeCanvas() {
   m.addEventListener("mouseup", event => {
     endDrawing(getCursorPosition(event));
   });
-
-  populatePrompts();
 }
 
-function populatePrompts() {
+function populatePrompts(progress) {
   let promptDisplay = document.querySelector("#prompts");
-  fetch("https://random-word-form.herokuapp.com/random/adjective?count=5")
+  if (!promptDisplay) return;
+  let promptType = ["animal", "adjective", "noun"][progress];
+  fetch(`https://random-word-form.herokuapp.com/random/${promptType}?count=5`)
     .then(response => response.json())
     .then(json => {
       console.log(json);
+      json = json.join("<br>");
       promptDisplay.innerHTML = json;
     });
+  document.getElementById(
+    "promptEnter"
+  ).placeholder = `Enter a(n) ${promptType}!`;
 }
 
 function getCursorPosition(event) {
@@ -139,24 +143,42 @@ async function getPixelData(imageData) {
   let monsterData = {
     ...monsterObject,
     //name0: store.startDrawing.artist,
-    word0: "aaaaa",
     //progress: store.startDrawing.progress, // 0 = head, 1 = torso, 2 = legs
     width: c.width,
     height: c.height,
     canvas: packedString
   };
+  monsterData[`word${monsterObject.progress}`] = document.getElementById(
+    "promptEnter"
+  ).value;
   // console.log("sending:", monsterData);
   // console.log("Already in store:", monsterObject);
   return monsterData;
 }
 
-export async function loadDrawing(monster, canvas) {
-  console.log("Monster data:", monster);
-  if (monster.progress in [0, 1, 2] === false) {
+export async function loadDrawing(monster, canvas, on_home_page = false) {
+  if ([0, 1, 2].includes(monster.progress) === false) {
     console.error("Tried to load an invalid monster!");
     return;
   }
-  updateDrawingInstructions(monster);
+  if (on_home_page) {
+    if (!monster.word1) monster.word1 = "";
+    if (!monster.word2) monster.word2 = "";
+    document.getElementById(
+      "monsterName"
+    ).innerHTML = `The ${monster.word1} ${monster.word2} ${monster.word0}`;
+    document.getElementById(
+      "artists"
+    ).innerHTML = `Created by: ${monster.name0}, ${monster.name1}, and
+      ${monster.name2}`;
+  } else {
+    // Adjust cover size
+    let coverSize = (1 / 3) * monster.progress * 100;
+    populatePrompts(monster.progress);
+    document.getElementById("cover").style.height = `${coverSize}%`;
+    updateDrawingInstructions(monster);
+  }
+
   if (!monster.width || !monster.height) {
     return;
   }
@@ -218,7 +240,7 @@ async function decompressBlob(compressedData) {
 
   //console.log("Compressed data in load:", compressedData);
   Uint8ArrayData = new Uint8Array(Uint8ArrayData);
-  console.log("UintArray", typeof Uint8ArrayData, Uint8ArrayData);
+
   const stream = new Blob([Uint8ArrayData]).stream();
 
   const decompressedStream = stream.pipeThrough(

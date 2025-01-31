@@ -31,14 +31,15 @@
   position: absolute;
   top: 0;
   left: 0;
-  background-color: red;
+  background-color: rgb(141, 141, 141);
   width: 100%;
-  height: 33.33333333333%;
+  height: 0%;
   z-index: 9999;
 }
 
 #canvasContainer {
   position: relative;
+  height: 450px;
 }
 
 
@@ -60,10 +61,12 @@ canvas {
   display: flex;
   flex-direction: column;
   padding: 15px;
+  margin: 10px;
 }
 
 #drawInstructions {
   padding: 25px;
+  margin: 10px;
 }
 /*#endregion */
 
@@ -117,6 +120,12 @@ body {
 }
 
 
+  .homePage {
+    display: flex;
+    flex-direction: column;
+    justify-content:center;
+    align-items: center;
+}
 
 /* nav > div, nav {
   margin: 20px;

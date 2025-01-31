@@ -1,3 +1,10 @@
+// TODO:
+// 1. Add a way for users to retrieve IDs after submitting a monster
+// DONE! 2. Add a way to submit word prompts
+// DONE! 3. Make canvas cover change size based on progress
+// 4. Redirect users to StartDrawing if progress invalid
+// 5. Add arrows for changing home monster
+
 // root index.js
 
 // importing all by name
@@ -53,9 +60,12 @@ router.hooks({
           .get(`${process.env.API_URL}/monsters?progress=2`)
           .then(response => {
             // We need to store the response to the state, in the next step but in the meantime let's see what it looks like so that we know what to store from the response.
-            console.log("response", response);
-            let randomMonster = response.data[Math.floor(Math.random() * response.data.length)];
+            store.home.monsterCount = response.data.length;
+            store.home.monsterIndex = Math.floor(Math.random() * response.data.length)
+            let randomMonster = response.data[store.home.monsterIndex];
+            store.home.monsters = response.data;
             store.home.monster = randomMonster;
+            console.log("Loaded monster #", store.home.monsterIndex, randomMonster);
             done();
           })
           .catch((error) => {
@@ -93,30 +103,55 @@ router.hooks({
               axios
             // Make a POST request to the API to create a new monster
             .post(`${process.env.API_URL}/monsters`, value)
+            .then((response) => {
+              alert(`Drawing successfully submitted! The monster's ID is: ${response.data._id}, share it with a friend if you want them to continue your drawing!`);
+              router.navigate("/home");
+            })
             .catch(error => {
               console.log("It puked", error);
             })
-          } else {
+          } else if ([1, 2].includes(value.progress)){
               axios
               // Make a POST request to the API to update monster
               .put(`${process.env.API_URL}/monsters/${value._id}`, value)
+              .then((response) => {
+                if (value.progress === 1){
+                  alert(`Drawing successfully submitted! The monster's ID is: ${response.data._id}, share it with a friend if you want them to continue your drawing!`);
+                } else {
+                  alert(`Monster finished! Check the home page to see your handiwork!`);
+                }
+                router.navigate("/home");
+              })
               .catch(error => {
                 console.log("It puked", error);
             })
+          } else {
+            console.error("Trying to send monster with invalid progress:", value.progress, typeof value.progress);
           }
         });
       });
-      if (store.drawing.monster.progress in [0,1,2]){
-        console.log("Trying to load monster:", store.drawing.monster);
-        let canvas = document.querySelector("#myCanvas");
-        loadDrawing(store.drawing.monster, canvas);
-      } else {
-        //router.navigate("/startDrawing");
-      }
+      // if (store.drawing.monster.progress in [0,1,2]){
+      //   console.log("Trying to load monster:", store.drawing.monster);
+      //   let canvas = document.querySelector("#myCanvas");
+      //   loadDrawing(store.drawing.monster, canvas);
+      // } else {
+      //   //router.navigate("/startDrawing");
+      // }
     }
     else if (view === "home") {
       let canvas = document.querySelector("#displayCanvas");
-      loadDrawing(store.home.monster, canvas);
+      loadDrawing(store.home.monster, canvas, true);
+      document.querySelector(".prev").addEventListener("click", event => {
+        store.home.monsterIndex -= 1;
+        if (store.home.monsterIndex < 0) store.home.monsterIndex = store.home.monsterCount - 1;
+        console.log("Monsters:", store.home.monsters, "index:", store.home.monsterIndex)
+        loadDrawing(store.home.monsters[store.home.monsterIndex], canvas, true);
+      });
+      document.querySelector(".next").addEventListener("click", event => {
+        store.home.monsterIndex += 1;
+        if (store.home.monsterIndex >= store.home.monsterCount) store.home.monsterIndex = 0;
+        loadDrawing(store.home.monsters[store.home.monsterIndex], canvas, true);
+      });
     }
     else if (view === "startDrawing") {
       let startDrawingForm = document.querySelector("#drawForm")
