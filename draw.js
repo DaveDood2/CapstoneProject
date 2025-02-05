@@ -1,16 +1,35 @@
+import { map } from "lodash";
+import * as store from "./store";
+
 let c;
 let m;
 let ctx;
 let currentColor = "black";
+let currentlyDrawing = false;
+let penSize = 10;
+let monsterObject = null;
 
-function initializeCanvas() {
+export function initializeCanvas() {
   c = document.getElementById("myCanvas");
   //c = document.querySelectorAll(".canvas");
   m = document.querySelector("main");
 
+  document.getElementById("cover").addEventListener("click", event => {
+    event.stopPropagation();
+  });
+
   ctx = c.getContext("2d");
+
   //ctx = Array.from(c).map(x => x.getContext("2d"));
   //console.log(ctx);
+
+  document.querySelector("#penSize").addEventListener("input", event => {
+    penSize = event.target.value;
+    document.querySelector(
+      "#penSizeLabel"
+    ).textContent = `Pen Size: ${event.target.value}`;
+  });
+  penSize = 10;
 
   document.addEventListener("contextmenu", event => {
     event.preventDefault();
@@ -20,33 +39,52 @@ function initializeCanvas() {
     beginDrawing(getCursorPosition(event));
   });
 
-  m.addEventListener("mousemove", event => {
+  c.addEventListener("mousemove", event => {
+    if (!currentlyDrawing) return;
     if (event.buttons === 1) {
+      ctx.globalCompositeOperation = "source-over";
       currentColor = "black";
       draw(getCursorPosition(event));
     } else if (event.buttons === 2) {
-      currentColor = "white";
+      ctx.globalCompositeOperation = "destination-out";
+      currentColor = "rgba(255, 255, 255, 1)";
       draw(getCursorPosition(event));
     } else {
       endDrawing(getCursorPosition(event));
     }
   });
 
-  m.addEventListener("mouseup", event => {
+  c.addEventListener("mouseleave", event => {
+    // let coords = getCursorPosition(event);
+    // ctx.moveTo(coords[0], coords[1]);
     endDrawing(getCursorPosition(event));
   });
 
-  populatePrompts();
+  c.addEventListener("mouseenter", event => {
+    if (event.buttons === 1 || event.buttons === 2) {
+      beginDrawing(getCursorPosition(event));
+    }
+  });
+
+  m.addEventListener("mouseup", event => {
+    endDrawing(getCursorPosition(event));
+  });
 }
 
-function populatePrompts() {
+function populatePrompts(progress) {
   let promptDisplay = document.querySelector("#prompts");
-  fetch("https://random-word-form.herokuapp.com/random/adjective?count=5")
+  if (!promptDisplay) return;
+  let promptType = ["animal", "adjective", "noun"][progress];
+  fetch(`https://random-word-form.herokuapp.com/random/${promptType}?count=5`)
     .then(response => response.json())
     .then(json => {
       console.log(json);
+      json = json.join("<br>");
       promptDisplay.innerHTML = json;
     });
+  document.getElementById(
+    "promptEnter"
+  ).placeholder = `Enter a(n) ${promptType}!`;
 }
 
 function getCursorPosition(event) {
@@ -61,11 +99,12 @@ function beginDrawing(coords) {
   //console.log(coords);
   ctx.beginPath();
   ctx.moveTo(coords[0], coords[1]);
-  ctx.lineWidth = 10;
+  ctx.lineWidth = penSize;
+  currentlyDrawing = true;
 }
 
 function draw(coords) {
-  ctx.lineWidth = 10;
+  ctx.lineWidth = penSize;
   ctx.strokeStyle = currentColor;
   ctx.lineTo(coords[0], coords[1]);
   ctx.stroke();
@@ -75,71 +114,158 @@ function endDrawing(coords) {
   //ctx.closePath();
   //ctx.stroke();
   ctx.moveTo(coords[0], coords[1]);
+  currentlyDrawing = false;
 }
 
-function saveDrawing() {
+export function saveDrawing() {
   console.log("Saving!");
   const rect = c.getBoundingClientRect();
-  let img = ctx.getImageData(0, 0, rect.width, rect.height);
-  //let img = ctx.getImageData(0, 0, 50, 50);
+  let img = ctx.getImageData(0, 0, c.width, c.height);
   return getPixelData(img.data);
 }
 
+export function setMonsterData(theMonsterInQuestion) {
+  console.log("Setting monster data:", theMonsterInQuestion);
+  monsterObject = theMonsterInQuestion;
+}
+
 async function getPixelData(imageData) {
-  const rect = c.getBoundingClientRect();
   let outputString = "";
   for (let i = 0; i < imageData.length; i += 4) {
-    if ((i / 4) % rect.width === 0) {
-      //outputString += "\n";
-    } else if (imageData[i + 3] && !imageData[i]) {
+    if (imageData[i + 3] && !imageData[i]) {
       outputString += "1";
     } else {
       outputString += "0";
     }
   }
-  //outputString = await compressData(outputString);
-  const compressedReadableStream = outputString.pipeThrough(
-    new CompressionStream("gzip")
-  );
-  console.log(typeof outputString);
+
+  let packedString = await compress(outputString);
   let monsterData = {
-    name0: "juicy!",
-    word0: "What",
-    progress: 0, // 0 = head, 1 = torso, 2 = legs
-    width: rect.width,
-    height: rect.height,
-    canvas: compressedReadableStream
+    ...monsterObject,
+    //name0: store.startDrawing.artist,
+    //progress: store.startDrawing.progress, // 0 = head, 1 = torso, 2 = legs
+    width: c.width,
+    height: c.height,
+    canvas: packedString
   };
+  monsterData[`word${monsterObject.progress}`] = document.getElementById(
+    "promptEnter"
+  ).value;
+  // console.log("sending:", monsterData);
+  // console.log("Already in store:", monsterObject);
   return monsterData;
 }
 
-// Function to compress data using Gzip
-async function compressData(data) {
-  // Create a new Gzip stream
-  const compressionStream = new CompressionStream("gzip");
-
-  // Use a TextEncoder to convert a string to a Uint8Array
-  const uint8Data = new TextEncoder().encode(data);
-
-  // Create a new ReadableStream from the source data
-  const readableStream = new ReadableStream({
-    start(controller) {
-      controller.enqueue(uint8Data);
-      controller.close();
-    }
-  });
-
-  // Pipe the ReadableStream through the compressionStream to get a compressed stream
-  const compressedStream = readableStream.pipeThrough(compressionStream);
-
-  // Collect the compressed chunks back into a single blob
-  const chunks = [];
-  const reader = compressedStream.getReader();
-  while (true) {
-    const { done, value } = await reader.read();
-    if (done) break;
-    chunks.push(value);
+export async function loadDrawing(monster, canvas, on_home_page = false) {
+  if ([0, 1, 2].includes(monster.progress) === false) {
+    console.error("Tried to load an invalid monster!");
+    return;
+  }
+  if (on_home_page) {
+    if (!monster.word1) monster.word1 = "";
+    if (!monster.word2) monster.word2 = "";
+    document.getElementById(
+      "monsterName"
+    ).innerHTML = `The ${monster.word1} ${monster.word2} ${monster.word0}`;
+    document.getElementById(
+      "artists"
+    ).innerHTML = `Created by: ${monster.name0}, ${monster.name1}, and
+      ${monster.name2}`;
+  } else {
+    // Adjust cover size
+    let coverSize = (1 / 3) * monster.progress * 100;
+    populatePrompts(monster.progress);
+    document.getElementById("cover").style.height = `${coverSize}%`;
+    updateDrawingInstructions(monster);
   }
 
-  return new Blob(chunks);
+  if (!monster.width || !monster.height) {
+    return;
+  }
+  canvas.width = monster.width;
+  canvas.height = monster.height;
+  let inputString = await decompressBlob(monster.canvas);
+  let ctx = canvas.getContext("2d");
+  let imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+  for (let c = 0; c < inputString.length; c++) {
+    if (inputString[c] === "1") {
+      imgData.data[c * 4 + 0] = 0;
+      imgData.data[c * 4 + 1] = 0;
+      imgData.data[c * 4 + 2] = 0;
+      imgData.data[c * 4 + 3] = 255;
+    }
+  }
+  ctx.putImageData(imgData, 0, 0);
+}
+
+function updateDrawingInstructions(monster) {
+  let instructions = document.getElementById("drawInstructions");
+  if (!instructions) return;
+  let partName = ["Head", "Torso", "Legs"][monster.progress];
+  let connectionInstructions = [
+    `Keep the bottom of the head unclosed,
+    leaving two lines just barely in the body section
+    so the torso drawer knows where to continue from.`,
+    `Continue the torso from the two lines the head drawer (hopefully) left you.
+    Keep the bottom of the torso unclosed,
+    and instead leave two lines hanging into the legs section,
+    so the legs drawer knows where to continue from.`,
+    `Continue drawing the legs from the two lines the torso drawer (hopefully) left you.
+    Since you are the last player to draw, you can close up the bottom of the legs.`
+  ][monster.progress];
+  instructions.innerHTML = `You are drawing the monster's ${partName}.
+
+  ${connectionInstructions}`;
+}
+
+// Credit for (de)compressing strings:
+// https://evanhahn.com/javascript-compression-streams-api-with-strings/
+async function compress(data) {
+  const stream = new Blob([data]).stream();
+  const compressedReadableStream = stream.pipeThrough(
+    new CompressionStream("gzip")
+  );
+  const chunks = [];
+  for await (const chunk of compressedReadableStream) {
+    chunks.push(chunk);
+  }
+  return await concatUint8Arrays(chunks);
+}
+
+async function decompressBlob(compressedData) {
+  let Uint8ArrayData = [];
+  Object.values(compressedData).forEach(element => {
+    Uint8ArrayData.push(element);
+  });
+
+  //console.log("Compressed data in load:", compressedData);
+  Uint8ArrayData = new Uint8Array(Uint8ArrayData);
+
+  const stream = new Blob([Uint8ArrayData]).stream();
+
+  const decompressedStream = stream.pipeThrough(
+    new DecompressionStream("gzip")
+  );
+
+  const chunks = [];
+  for await (const chunk of decompressedStream) {
+    chunks.push(chunk);
+  }
+  const stringBytes = await concatUint8Arrays(chunks);
+
+  return new TextDecoder().decode(stringBytes);
+}
+
+async function concatUint8Arrays(uint8arrays) {
+  const blob = new Blob(uint8arrays);
+  const buffer = await blob.arrayBuffer();
+  return new Uint8Array(buffer);
+}
+
+async function testCompression() {
+  const str = "foo".repeat(1000);
+  const compressedBytes = await compress(str);
+  console.log(compressedBytes, typeof compressedBytes);
+  const decompressed = await decompressBlob(compressedBytes);
+  console.log(decompressed);
 }

@@ -98,22 +98,49 @@ export default () => html`
     </div>
 
     <!-- Next and previous buttons -->
-    <a class="prev" onclick="plusSlides(-1)">&#10094;</a>
-    <a class="next" onclick="plusSlides(1)">&#10095;</a>
+    <a class="prev">&#10094;</a>
+    <a class="next">&#10095;</a>
   </div>
   <br />
 
   <!-- The dots/circles -->
   <div style="text-align:center">
-    <span class="dot" onclick="currentSlide(1)"></span>
-    <span class="dot" onclick="currentSlide(2)"></span>
-    <span class="dot" onclick="currentSlide(3)"></span>
-    <span class="dot" onclick="currentSlide(4)"></span>
-    <span class="dot" onclick="currentSlide(5)"></span>
-    <span class="dot" onclick="currentSlide(6)"></span>
-    <span class="dot" onclick="currentSlide(7)"></span>
-    <span class="dot" onclick="currentSlide(8)"></span>
+    <span class="dot"></span>
+    <span class="dot"></span>
+    <span class="dot"></span>
+    <span class="dot"></span>
+    <span class="dot"></span>
+    <span class="dot"></span>
+    <span class="dot"></span>
+    <span class="dot"></span>
   </div>
 
-  <script src="slides.js"></script>
+  <h2>Who are you?</h2>
+  <p class="roboto-mono">
+    I am Lucy (they/them), a non-binary game developer, artist, and computer
+    scientist. I want to make art that is characteristic of me, the kind of art
+    that tells a personal story, resonates with people, and helps me to figure
+    out who I am. <br /><br />I often struggle to live in the moment, and to
+    just enjoy the process of creating art.<br /><br />It's easy to get caught
+    up in comparing my own art with others, but I'm gradually learning how to
+    focus on improving my own art. I'm glad I have been, as many times I look at
+    my own art and think: "wow, I made that?"
+  </p>
+
+  <h2>What inspired you to make an art game for your capstone?</h2>
+  <p class="roboto-mono">
+    I wanted to make an art game as a way to remind myself and others why people
+    make art to begin with: it is fun! Exquisite Corpse is a fantastic way to
+    bring artists of all skill levels together, and so I wanted to make a
+    tribute to it.
+  </p>
+
+  <!-- <h2>What helped you to become a better artist?</h2>
+  <p class="roboto-mono">
+    Artists of every skill levels will always have to learn how to deal with
+    imposter syndrome. <br /><br />I wanted to make an art game as a way to
+    remind myself and others why people make art to begin with: to enjoy the
+    process of creation, and to interact with others! <br /><br />
+    Exquisite Corpse is a fantastic game for
+  </p> -->
 `;
