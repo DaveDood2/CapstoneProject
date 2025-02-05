@@ -78,6 +78,11 @@ canvas {
   padding: 25px;
   margin: 10px;
 }
+
+input:invalid {
+  border: red solid 3px;
+}
+
 /*#endregion */
 
 .hero {

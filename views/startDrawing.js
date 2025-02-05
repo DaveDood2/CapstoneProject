@@ -4,13 +4,16 @@ import html from "html-literal";
 export default () => html`
   <main>
     <h2>
-      <form id="drawForm">
+      <form id="drawForm" autocomplete="on">
         <p>
-          <label for="name">Name:</label>
+          <label for="name">Your artist name:</label>
           <input
             type="text"
             name="name"
             placeholder="Super Johnny FIGHT!"
+            pattern="[A-Za-z0-9! ]*"
+            autocomplete="username"
+            id="username"
             required
           />
         </p>
@@ -38,6 +41,7 @@ export default () => html`
           <label for="continueMonster">Continue Monster</label><br />
         </p>
         <p class="showIfNew">
+          don't mind me this box is just a placeholder for things to come
           <!-- <label for="sacrificialFruit"
             >New monsters require a sacrificial fruit. Choose wisely!</label
           >

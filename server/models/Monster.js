@@ -11,7 +11,7 @@ const monsterScheme = new mongoose.Schema({
   word0: {
     type: String,
     required: true,
-    validate: /^[A-Za-z-]*$/
+    validate: /^[A-Za-z!]*(-)*[A-Za-z!]*$/
   },
   name1: {
     type: String,
@@ -19,7 +19,7 @@ const monsterScheme = new mongoose.Schema({
   },
   word1: {
     type: String,
-    validate: /^[A-Za-z-]*$/
+    validate: /^[A-Za-z!]*(-)*[A-Za-z!]*$/
   },
   name2: {
     type: String,
@@ -27,7 +27,7 @@ const monsterScheme = new mongoose.Schema({
   },
   word2: {
     type: String,
-    validate: /^[A-Za-z-]*$/
+    validate: /^[A-Za-z!]*(-)*[A-Za-z!]*$/
   },
   canvas: {
     type: Object,

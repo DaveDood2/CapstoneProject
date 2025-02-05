@@ -9,7 +9,7 @@ export default () => html`
       ></a>
     </p>
     <p>
-      <a href="https://discord.gg/4gVRaEpx"
+      <a href="https://discord.gg/6DQ6Qa5ABq"
         ><i class="fa-brands fa-discord"></i> Discord Server
         <i class="fa-brands fa-discord"></i
       ></a>
