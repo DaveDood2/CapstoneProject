@@ -42,16 +42,20 @@
   height: 450px;
 }
 
+#myCanvas {
+  touch-action: none;
+}
+
 #canvasContainer > .prev {
   position: absolute;
   top: 50%;
-  left: -25%;
+  left: -15%;
 }
 
 #canvasContainer > .next {
   position: absolute;
   top: 50%;
-  left: 110%;
+  left: 100%;
 }
 
 canvas {
@@ -77,6 +81,11 @@ canvas {
 #drawInstructions {
   padding: 25px;
   margin: 10px;
+}
+
+.center {
+  display: flex;
+  justify-content: center;
 }
 
 input:invalid {
@@ -371,6 +380,11 @@ button {
     box-shadow: 2px 2px black;
     width: 50px;
     align-self: center;
+  }
+
+  .horizontal {
+    display: flex;
+    flex-direction: column-reverse;
   }
 }
 /*#endregion*/

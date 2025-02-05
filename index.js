@@ -154,10 +154,12 @@ router.hooks({
       });
     }
     else if (view === "startDrawing") {
-      let startDrawingForm = document.querySelector("#drawForm")
+      let startDrawingForm = document.querySelector("#drawForm");
+      document.querySelector("#username").value = sessionStorage.getItem("username");
       startDrawingForm.addEventListener("submit", event => {
         event.preventDefault();
         let formData = getFormData();
+        sessionStorage.setItem("username", formData.get("name"));
         if (formData.get("newOrContinue")  === "newMonster") {
           // Create a new monster
           store.drawing.monster = {

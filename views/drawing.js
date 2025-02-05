@@ -3,7 +3,7 @@ import html from "html-literal";
 export default state => html`
   <main>
     <form id="uploadForm">
-      <div>
+      <div class="center">
         <p id="drawInstructions">
           You are free-drawing.<br /><br />You will NOT be able to save/upload
           your drawing, but you can test out drawing here.<br /><br />Please

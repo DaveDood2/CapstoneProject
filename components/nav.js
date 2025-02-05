@@ -10,8 +10,9 @@ import navItem from "./navItem.js";
 export default navItems => {
   return html`
     <nav>
-      <i class="fas fa-bars"></i>
-      <div class="hidden--mobile">
+      <!-- <i class="fas fa-bars"></i> -->
+      <!-- <div class="hidden--mobile"> -->
+      <div>
         ${navItems.map(item => navItem(item)).join("")}
       </div>
     </nav>

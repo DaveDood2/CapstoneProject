@@ -1,5 +1,6 @@
 import { map } from "lodash";
 import * as store from "./store";
+import { ja } from "@faker-js/faker";
 
 let c;
 let m;
@@ -8,6 +9,7 @@ let currentColor = "black";
 let currentlyDrawing = false;
 let penSize = 10;
 let monsterObject = null;
+let eraseToggle = false;
 
 export function initializeCanvas() {
   c = document.getElementById("myCanvas");
@@ -35,8 +37,23 @@ export function initializeCanvas() {
     event.preventDefault();
   });
 
-  m.addEventListener("mousedown", event => {
+  m.addEventListener("pointerdown", event => {
     beginDrawing(getCursorPosition(event));
+  });
+
+  c.addEventListener("pointermove", event => {
+    if (!currentlyDrawing || event.pointerType !== "touch") return;
+    if (!eraseToggle) {
+      ctx.globalCompositeOperation = "source-over";
+      currentColor = "black";
+      draw(getCursorPosition(event));
+    } else if (eraseToggle) {
+      ctx.globalCompositeOperation = "destination-out";
+      currentColor = "rgba(255, 255, 255, 1)";
+      draw(getCursorPosition(event));
+    } else {
+      endDrawing(getCursorPosition(event));
+    }
   });
 
   c.addEventListener("mousemove", event => {
@@ -71,22 +88,6 @@ export function initializeCanvas() {
   });
 }
 
-function populatePrompts(progress) {
-  let promptDisplay = document.querySelector("#prompts");
-  if (!promptDisplay) return;
-  let promptType = ["animal", "adjective", "noun"][progress];
-  fetch(`https://random-word-form.herokuapp.com/random/${promptType}?count=5`)
-    .then(response => response.json())
-    .then(json => {
-      console.log(json);
-      json = json.join("<br>");
-      promptDisplay.innerHTML = json;
-    });
-  document.getElementById(
-    "promptEnter"
-  ).placeholder = `Enter a(n) ${promptType}!`;
-}
-
 function getCursorPosition(event) {
   const rect = c.getBoundingClientRect();
   const x = event.clientX - rect.left;
@@ -115,6 +116,22 @@ function endDrawing(coords) {
   //ctx.stroke();
   ctx.moveTo(coords[0], coords[1]);
   currentlyDrawing = false;
+}
+
+function populatePrompts(progress) {
+  let promptDisplay = document.querySelector("#prompts");
+  if (!promptDisplay) return;
+  let promptType = ["animal", "adjective", "noun"][progress];
+  fetch(`https://random-word-form.herokuapp.com/random/${promptType}?count=5`)
+    .then(response => response.json())
+    .then(json => {
+      console.log(json);
+      json = json.join("<br>");
+      promptDisplay.innerHTML = json;
+    });
+  document.getElementById(
+    "promptEnter"
+  ).placeholder = `Enter a(n) ${promptType}!`;
 }
 
 export function saveDrawing() {
