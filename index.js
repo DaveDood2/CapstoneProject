@@ -1,9 +1,9 @@
 // TODO:
-// 1. Add a way for users to retrieve IDs after submitting a monster
+// DONE! 1. Add a way for users to retrieve IDs after submitting a monster
 // DONE! 2. Add a way to submit word prompts
 // DONE! 3. Make canvas cover change size based on progress
-// 4. Redirect users to StartDrawing if progress invalid
-// 5. Add arrows for changing home monster
+// EH!   4. Redirect users to StartDrawing if progress invalid
+// DONE! 5. Add arrows for changing home monster
 
 // root index.js
 
@@ -173,12 +173,17 @@ router.hooks({
               .then(response => {
                 // We need to store the response to the state, in the next step but in the meantime let's see what it looks like so that we know what to store from the response.
                 console.log("response", response);
-                let randomMonster = response.data[Math.floor(Math.random() * response.data.length)];
+                if (response.data.length === 0) {
+                  // Safeguard in event that there are no unfinished monsters
+                  alert("Couldn't find any unfinished monsters! Try creating a new one instead.");
+                  throw new Error("Couldn't find any unfinished monsters! Try creating a new one instead.")
+                }
+                else {
+                  let randomMonster = response.data[Math.floor(Math.random() * response.data.length)];
                 store.drawing.monster = randomMonster;
-                console.log("Here's what the monster is so far", store.drawing.monster);
-                console.assert(store.drawing.monster.progress in [0, 1], store.drawing.monster.progress);
                 store.drawing.monster.progress += 1;
                 store.drawing.monster["name" + store.drawing.monster.progress] = formData.get("name");
+                }
                 loadMonster();
                 //done();
               })
@@ -196,14 +201,21 @@ router.hooks({
                 console.log("response", response);
                 store.drawing.monster = response.data;
                 console.log("Here's what the monster is so far", store.drawing.monster);
-                console.assert(store.drawing.monster.progress in [0, 1], store.drawing.monster.progress);
+                if (!store.drawing.monster) {
+                  alert("Couldn't find a monster with that ID!")
+                  throw new Error("Couldn't find a monster with that ID!");
+                }
+                if (![0,1].includes(store.drawing.monster.progress)) {
+                  alert("That monster is already finished!")
+                  throw new Error("That monster is already finished!");
+                }
                 store.drawing.monster.progress += 1;
                 store.drawing.monster["name" + store.drawing.monster.progress] = formData.get("name");
                 loadMonster();
                 //done();
               })
               .catch((error) => {
-                console.log("It puked", error);
+                console.error("It puked", error);
                 //done();
               });
           }
@@ -215,7 +227,11 @@ router.hooks({
 });
 
 //render();
-router.on("/", () => render(store.home)).resolve();
+router.on("/", () => {
+  render(store.home);
+  router.navigate("/home");
+}).resolve();
+
 
 router
 .on({
@@ -241,8 +257,9 @@ function loadMonster(){
   router.navigate("/drawing");
   setMonsterData(store.drawing.monster);
         let canvas = document.querySelector("#myCanvas");
-        if (store.drawing.monster.progress){
+        if ([0,1,2].includes(store.drawing.monster.progress)){
           console.log("Trying to load monster:", store.drawing.monster);
           loadDrawing(store.drawing.monster, canvas);
         }
+
 }

@@ -42,7 +42,17 @@
   height: 450px;
 }
 
+#canvasContainer > .prev {
+  position: absolute;
+  top: 50%;
+  left: -25%;
+}
 
+#canvasContainer > .next {
+  position: absolute;
+  top: 50%;
+  left: 110%;
+}
 
 canvas {
   border:1px solid grey;
