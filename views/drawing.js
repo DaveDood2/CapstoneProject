@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 import html from "html-literal";
 export default state => html`
   <main>
@@ -22,9 +23,13 @@ export default state => html`
             type="text"
             name="prompt"
             id="promptEnter"
-            placeholder="No point fillin' this out!"
+            placeholder="No
+          point fillin' this out!"
+            pattern="[A-Za-z!]*(-)*[A-Za-z!]*"
             required
           />
+          <!-- pattern="[A-Za-z]*(-)*[A-Za-z]*" -->
+          <label>(The prompt is also how the monster gets its name!)</label>
         </p>
         <div id="canvasContainer">
           <div id="cover"></div>
