@@ -12,6 +12,7 @@ export default state => html`
       </div>
       <div class="horizontal">
         <p id="toolbar">
+          <label>Left click = draw black, right click = draw white</label>
           <input type="range" id="penSize" name="penSize" min="1" max="20" />
           <label for="penSize" id="penSizeLabel">Pen Size: 10</label>
           <label

@@ -135,6 +135,23 @@ export default () => html`
     tribute to it.
   </p>
 
+  <h2>I am ready to FIGHT! How do I play this game?</h2>
+  <p class="roboto-mono">
+    I'm so glad you asked, hypothetical person!<br />
+    I just so happen to have a lovely video explaining how to play from none
+    other than THE NECROMANCER themselves. Check it out!<br />
+    <iframe
+      width="560"
+      height="315"
+      src="https://www.youtube.com/embed/K6VRESK0KnM?si=WQ1y8VzptSP0KrYn"
+      title="YouTube video player"
+      frameborder="0"
+      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+      referrerpolicy="strict-origin-when-cross-origin"
+      allowfullscreen
+    ></iframe>
+  </p>
+
   <!-- <h2>What helped you to become a better artist?</h2>
   <p class="roboto-mono">
     Artists of every skill levels will always have to learn how to deal with
