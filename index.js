@@ -56,6 +56,7 @@ router.hooks({
       // Add a case for each view that needs data from an API
       case "home":
         // New Axios get request utilizing already made environment variable
+        render(store.home);
         axios
           .get(`${process.env.API_URL}/monsters?progress=2`)
           .then(response => {
