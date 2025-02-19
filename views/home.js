@@ -6,7 +6,8 @@ export default state => html`
   <main class="homePage">
     <img id="monsterMakerBack" src="${monsterMakerBack}" />
     <p id="monsterName">
-      The ${state.monster.word0} ${state.monster.word1} ${state.monster.word2}
+      The Database is Currently Loading!<br />(This will take a while if no one
+      has played in a while.)
     </p>
     <div class="horizontal">
       <div id="canvasContainer">
@@ -21,8 +22,7 @@ export default state => html`
       </div>
     </div>
     <p id="artists">
-      Created by: ${state.monster.name0}, ${state.monster.name1}, and
-      ${state.monster.name2}
+      Wow that database sure is loading, huh?
     </p>
   </main>
 `;
